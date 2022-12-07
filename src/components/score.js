@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import io from 'socket.io-client'
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -18,7 +19,17 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const ScoreList = () => {
     // const [datetime, setDatetime] = useState(new Date());
+    const isMount = React.useRef()
+
+    useEffect(() => {
+      isMount.current = true
+
+      return () => {
+        isMount.current = false
+      }
+    }, [])
     const [data, setData] = useState([])
+    const [summaryScore, setSummaryScore] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const getData = () => { 
        return fetch("http://localhost:3000/api/quiz/score")
@@ -36,6 +47,23 @@ const ScoreList = () => {
       //   clearInterval(id)
       // }
     }, [data])
+
+    useEffect(() => {
+      // connect to socket
+      const socket = io(`http://localhost:3000/quiz-socket`)
+  
+      socket.on('init', (items) => {
+        if (isMount.current) {
+          setSummaryScore(items)
+        }
+      })
+  
+      socket.on('update', (items) => {
+        if (isMount.current) {
+          setSummaryScore(items)
+        }
+      })
+    }, [isMount])
 
     if(isLoading) {
       return <h1 style={{ textAlign: "center"}}>loading...</h1>

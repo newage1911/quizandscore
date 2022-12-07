@@ -27,18 +27,6 @@ const Quiz = () => {
     const [cookies, setCookie, removeCookie] = useCookies([COOKIE_NAME]);
     // console.log(cookies) //  { "quiz-number": 1 }
 
-    const [sheetdata, setSheetData] = useState([])
-
-    useEffect(() => {
-        Tabletop.init({
-            key: "1DJjWasHTRzr3RfNsvihrwwsO0tjrDJlg4hvAfWqzgP0",
-            simpleSheet: true
-        })
-        .then((sheetdata) => setSheetData(sheetdata))
-        .catch((err) => console.warn(err));
-        console.log("googlesheetData", sheetdata)
-    }, [])
-
     // cookies ? cookies[COOKIE_NAME] : undefined = cookies?.[COOKIE_NAME]
     const [current, setCurrent] = useState(cookies?.[COOKIE_NAME] ? Number(cookies?.[COOKIE_NAME]) : 0)
     // next question
@@ -91,17 +79,6 @@ const Quiz = () => {
           <Grid container spacing={0} alignItems="center" justifyContent="center">
             <Box sx={{ width: '90%', mb: 1}}>
                 <Stack spacing={2}>
-                    <h1>Data from GoogleSheet</h1>
-                    <ul>
-                        {sheetdata.map((item, i) => (
-                         <Fragment key={i}>
-                        <li>URL -- {item.question}</li>
-                        <li>Email - {item.choiceA}</li>
-                        <li>Token - {item.choiceB}</li>
-                        <br />
-                        </Fragment>
-                        ))}
-                    </ul>
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'blue', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}>
                             {QuestionsData[current].A}
