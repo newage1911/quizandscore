@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from "react";
+import { useState, useEffect, Fragment } from "react";
 import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import { Grid, Typography, Box, CardMedia } from "@mui/material";
@@ -8,6 +8,10 @@ import QuestionsData from "../data/Questions";
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import { useCookies } from 'react-cookie';
+import Tabletop from 'tabletop';
+
+const COOKIE_NAME = 'quiz-number'
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -20,14 +24,32 @@ const Item = styled(Paper)(({ theme }) => ({
   }));
 
 const Quiz = () => {
-    const [current, setCurrent] = useState(0)
+    const [cookies, setCookie, removeCookie] = useCookies([COOKIE_NAME]);
+    // console.log(cookies) //  { "quiz-number": 1 }
+
+    const [sheetdata, setSheetData] = useState([])
+
+    useEffect(() => {
+        Tabletop.init({
+            key: "1DJjWasHTRzr3RfNsvihrwwsO0tjrDJlg4hvAfWqzgP0",
+            simpleSheet: true
+        })
+        .then((sheetdata) => setSheetData(sheetdata))
+        .catch((err) => console.warn(err));
+        console.log("googlesheetData", sheetdata)
+    }, [])
+
+    // cookies ? cookies[COOKIE_NAME] : undefined = cookies?.[COOKIE_NAME]
+    const [current, setCurrent] = useState(cookies?.[COOKIE_NAME] ? Number(cookies?.[COOKIE_NAME]) : 0)
     // next question
     const nextQ = () => {
         setCurrent(current + 1);
+        setCookie(COOKIE_NAME, current + 1)
     }
     // previous question
     const prevQ = () => {
         setCurrent(current - 1);
+        setCookie(COOKIE_NAME, current - 1)
     }
 
     document.onkeydown = function(e) { 
@@ -49,7 +71,7 @@ const Quiz = () => {
     }
 
     return (
-        <Grid container spacing={0} direction="column" alignItems="center" justify="center" sx={{ mt: 2 }}>
+        <Grid container spacing={0} direction="column" alignItems="center" justify="center" sx={{ mt: 1 }}>
             <Box sx={{ width: '85%', height: '70px'}}>
                 <Typography variant='h6' sx={{ textAlign: 'center'}}>
                     {QuestionsData[current].question}
@@ -59,7 +81,7 @@ const Quiz = () => {
             <Grid container direction="column" alignItems="center" justify="center">
                 <CardMedia
                 component="img"
-                sx={{ height: 140, width: 200, justify: 'center', alignItems: 'center', borderRadius: 2,}}
+                sx={{ height: 100, width: 200, justify: 'center', alignItems: 'center', borderRadius: 2,}}
                 src={QuestionsData[current].image}
                 alt="picture">
                 </CardMedia> 
@@ -67,21 +89,40 @@ const Quiz = () => {
 
             {/* answer box */}
           <Grid container spacing={0} alignItems="center" justifyContent="center">
-            <Box sx={{ width: '90%', mb: 3, mt: 1}}>
+            <Box sx={{ width: '90%', mb: 1}}>
                 <Stack spacing={2}>
-                    <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'red', height: '40px', padding: 1.5}}>
+                    <h1>Data from GoogleSheet</h1>
+                    <ul>
+                        {sheetdata.map((item, i) => (
+                         <Fragment key={i}>
+                        <li>URL -- {item.question}</li>
+                        <li>Email - {item.choiceA}</li>
+                        <li>Token - {item.choiceB}</li>
+                        <br />
+                        </Fragment>
+                        ))}
+                    </ul>
+                    <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'blue', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}>
                             {QuestionsData[current].A}
                         </Typography>
                     </Item>
+
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: '#ffc107', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}>
                             {QuestionsData[current].B}
                         </Typography>
                     </Item>
-                    <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'blue', height: '40px', padding: 1.5}}>
+
+                    <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'red', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}> 
                             {QuestionsData[current].C}
+                        </Typography>
+                    </Item>
+
+                    <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: '#00c853', height: '40px', padding: 1.5}}>
+                        <Typography color="black" sx={{ fontSize: 17}}> 
+                            {QuestionsData[current].D}
                         </Typography>
                     </Item>
                 </Stack>
