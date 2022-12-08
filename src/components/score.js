@@ -18,21 +18,21 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   }));
 
 const ScoreList = () => {
-    // const [datetime, setDatetime] = useState(new Date());
-    const isMount = React.useRef()
+    // const isMount = React.useRef()
 
-    useEffect(() => {
-      isMount.current = true
+    // useEffect(() => {
+    //   isMount.current = true
 
-      return () => {
-        isMount.current = false
-      }
-    }, [])
+    //   return () => {
+    //     isMount.current = false
+    //   }
+    // }, [])
     const [data, setData] = useState([])
     const [summaryScore, setSummaryScore] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const getData = () => { 
-       return fetch("http://localhost:3000/api/quiz/score")
+      // return fetch("http://localhost:3000/api/quiz/score")
+       return fetch("http://jsontypicode.com/user")
             .then((response) => response.json())
             .then((data) => {
               setData(data)
@@ -42,28 +42,24 @@ const ScoreList = () => {
     }
     useEffect(() => {
       getData()
-      // const id = setInterval(() => setDatetime( new Date(), 1000));
-      // return () => {
-      //   clearInterval(id)
-      // }
-    }, [data])
+    }, [])
 
-    useEffect(() => {
-      // connect to socket
-      const socket = io(`http://localhost:3000/quiz-socket`)
+    // useEffect(() => {
+    //   // connect to socket
+    //   const socket = io(`http://localhost:3000/quiz-socket`)
   
-      socket.on('init', (items) => {
-        if (isMount.current) {
-          setSummaryScore(items)
-        }
-      })
+    //   socket.on('init', (items) => {
+    //     if (isMount.current) {
+    //       setSummaryScore(items)
+    //     }
+    //   })
   
-      socket.on('update', (items) => {
-        if (isMount.current) {
-          setSummaryScore(items)
-        }
-      })
-    }, [isMount])
+    //   socket.on('update', (items) => {
+    //     if (isMount.current) {
+    //       setSummaryScore(items)
+    //     }
+    //   })
+    // }, [isMount])
 
     if(isLoading) {
       return <h1 style={{ textAlign: "center"}}>loading...</h1>
@@ -142,10 +138,9 @@ const ScoreList = () => {
           </Grid>
         </StyledPaper>
       </Grid>
-      <Box textAlign='center'>
-        <Button color="error" variant="contained">clear</Button>    
-      </Box>
-                {/* <Typography variant='h6' color='white' sx={{ textAlign: 'center'}}>{datetime.toLocaleString("en-GB")}</Typography> */}
+        <Box textAlign='center'>
+          <Button color="error" variant="contained">clear</Button>    
+        </Box>
       </Box>
     )
 }

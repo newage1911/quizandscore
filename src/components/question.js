@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { useCookies } from 'react-cookie';
-import Tabletop from 'tabletop';
 
 const COOKIE_NAME = 'quiz-number'
 
@@ -25,8 +24,19 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const Quiz = () => {
     const [cookies, setCookie, removeCookie] = useCookies([COOKIE_NAME]);
-    // console.log(cookies) //  { "quiz-number": 1 }
-
+    const [data, setData] = useState([])
+    const getQuestion = () => {
+        return fetch(`https://sheets.googleapis.com/v4/spreadsheets/${process.env.REACT_APP_SPREDSHEET_ID}/values/${process.env.REACT_APP_SHEET_NAME}!A1:Z1000?key=${process.env.REACT_APP_API_KEY}`)
+        .then((respone) => respone.json())
+        .then((data) => {
+            setData(data)
+            console.log(data)
+        });
+    }
+    useEffect(() => {
+        getQuestion()
+    
+    }, [])
     // cookies ? cookies[COOKIE_NAME] : undefined = cookies?.[COOKIE_NAME]
     const [current, setCurrent] = useState(cookies?.[COOKIE_NAME] ? Number(cookies?.[COOKIE_NAME]) : 0)
     // next question
@@ -50,7 +60,7 @@ const Quiz = () => {
             break;
 
             case 39: 
-            if(current === QuestionsData.length - 1) {
+            if(current === data.values.length - 1) {
                 this.onkeydown.preventDefault();
             }
             setCurrent(current + 1);
@@ -62,7 +72,7 @@ const Quiz = () => {
         <Grid container spacing={0} direction="column" alignItems="center" justify="center" sx={{ mt: 1 }}>
             <Box sx={{ width: '85%', height: '70px'}}>
                 <Typography variant='h6' sx={{ textAlign: 'center'}}>
-                    {QuestionsData[current].question}
+                    {}
                 </Typography>
             </Box>
             
@@ -70,7 +80,6 @@ const Quiz = () => {
                 <CardMedia
                 component="img"
                 sx={{ height: 100, width: 200, justify: 'center', alignItems: 'center', borderRadius: 2,}}
-                src={QuestionsData[current].image}
                 alt="picture">
                 </CardMedia> 
             </Grid>
@@ -81,25 +90,25 @@ const Quiz = () => {
                 <Stack spacing={2}>
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'blue', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}>
-                            {QuestionsData[current].A}
+                            {}
                         </Typography>
                     </Item>
 
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: '#ffc107', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}>
-                            {QuestionsData[current].B}
+                            {}
                         </Typography>
                     </Item>
 
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: 'red', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}> 
-                            {QuestionsData[current].C}
+                            {}
                         </Typography>
                     </Item>
 
                     <Item variant="outlined" sx={{ borderLeft: 20, borderRight: 20, borderColor: '#00c853', height: '40px', padding: 1.5}}>
                         <Typography color="black" sx={{ fontSize: 17}}> 
-                            {QuestionsData[current].D}
+                            {}
                         </Typography>
                     </Item>
                 </Stack>
@@ -110,7 +119,7 @@ const Quiz = () => {
                 <Button variant='outlined' disabled={current === 0} onClick={()=>prevQ()} color="primary" startIcon={<ArrowBackIosNewOutlinedIcon/>}></Button> 
                 <Button variant='outlined' disabled={current === QuestionsData.length - 1} onClick={()=>nextQ()} color="primary" endIcon={<ArrowForwardIosOutlinedIcon/>}></Button> 
             </Stack>
-                <Typography sx={{ textAlign: 'center', mt: 1}}>{`${current  + 1}`} / {`${QuestionsData.length}`}</Typography>   
+                <Typography sx={{ textAlign: 'center', mt: 1}}>{`${current  + 1}`} / {`${data.values.length}`}</Typography>   
         </Grid>
     );
 }
