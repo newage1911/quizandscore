@@ -32,7 +32,7 @@ const ScoreList = () => {
     const [isLoading, setIsLoading] = useState(false)
     const getData = () => { 
       // return fetch("http://localhost:3000/api/quiz/score")
-       return fetch("http://jsontypicode.com/user")
+       return fetch("")
             .then((response) => response.json())
             .then((data) => {
               setData(data)
